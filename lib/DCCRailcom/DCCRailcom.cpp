@@ -43,41 +43,18 @@ void DCCRailcom::writeBit(int bit) {
  * @brief Send a DCC packet.
  * @param data A byte array containing the data to send.
  * @param numBits The number of bits to send from the data array.
- * @param calcChecksumFromLastNBytes The number of bytes from the end of the data array to use for checksum calculation.
  */
-void DCCRailcom::sendPacket(const uint8_t* data, int numBits, int calcChecksumFromLastNBytes) {
+void DCCRailcom::sendPacket(const uint8_t* data, int numBits) {
   // 1. Railcom Cutout
   digitalWrite(_railcomPin, HIGH);
   delayMicroseconds(RAILCOM_CUTOUT_DURATION);
   digitalWrite(_railcomPin, LOW);
 
-  // 2. Send the main data packet
+  // 2. Send the raw data packet
   for (int i = 0; i < numBits; i++) {
     int byteIndex = i / 8;
     int bitIndex = 7 - (i % 8); // MSB first
     int bit = (data[byteIndex] >> bitIndex) & 1;
     writeBit(bit);
-  }
-
-  // 3. Optional Checksum Calculation and Transmission
-  if (calcChecksumFromLastNBytes > 0) {
-    uint8_t checksum = 0;
-    int numBytes = numBits / 8; // Calculate checksum on full bytes only
-    if (calcChecksumFromLastNBytes > numBytes) {
-      calcChecksumFromLastNBytes = numBytes; // Prevent reading out of bounds
-    }
-    int startByte = numBytes - calcChecksumFromLastNBytes;
-
-    for (int i = startByte; i < numBytes; i++) {
-      checksum ^= data[i];
-    }
-
-    // Send the checksum packet
-    writeBit(0); // Start bit for checksum
-    for (int i = 7; i >= 0; i--) {
-      int bit = (checksum >> i) & 1;
-      writeBit(bit);
-    }
-    writeBit(1); // End bit for the entire packet
   }
 }

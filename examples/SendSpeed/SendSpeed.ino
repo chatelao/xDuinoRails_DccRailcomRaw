@@ -30,21 +30,27 @@ void loop() {
   // Address: 3 (00000011)
   // Command: 128-step speed (00111111)
   // Speed: 58 (00111010)
+  // Checksum: 3 XOR 63 XOR 58 = 10 (00001010)
 
-  // Construct the DCC packet without the checksum
-  uint8_t dccPacket[] = {
-    0xFF, 0xFF, // Preamble (16 bits of '1's)
-    0x03,       // Address (loco 3)
-    0x3F,       // Command (128-step speed)
-    0x3A        // Speed (58)
+  // Construct the complete DCC packet as a raw binary array
+  // The bitstream is:
+  // 11111111 11111111 0 00000011 0 00111111 0 00111010 0 00001010 1
+  uint8_t rawPacket[] = {
+    0xFF,       // Preamble
+    0xFC,       // Preamble (4 bits) + 0 + Address (3) - first 3 bits
+    0x1F,       // last 5 bits of address + 0 + Command (63) - first 2 bits
+    0xDE,       // last 6 bits of command + 0 + Speed (58) - first 1 bit
+    0x82,       // last 7 bits of speed + 0
+    0x8A,       // Checksum (10)
+    0x80        // End bit (1) + 7 padding bits
   };
 
-  // The number of bits in the packet to be sent, including start bits and preamble
-  // Preamble (16) + Start (1) + Address (8) + Start (1) + Command (8) + Start (1) + Speed (8) = 43
-  int numBits = 43;
+  // The number of bits in the packet to be sent
+  // Preamble (16) + Start (1) + Address (8) + Start (1) + Command (8) + Start (1) + Speed (8) + Start (1) + Checksum (8) + End (1) = 52
+  int numBits = 52;
 
-  // Send the DCC packet and calculate the checksum from the last 3 bytes (address, command, speed)
-  dcc.sendPacket(dccPacket, numBits, 3);
+  // Send the DCC packet
+  dcc.sendPacket(rawPacket, numBits);
 
   // Wait for a second before sending the next packet
   delay(1000);

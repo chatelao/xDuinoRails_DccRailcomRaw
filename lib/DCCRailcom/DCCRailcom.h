@@ -25,9 +25,8 @@ public:
    * @brief Send a DCC packet.
    * @param data A byte array containing the data to send.
    * @param numBits The number of bits to send from the data array.
-   * @param calcChecksumFromLastNBytes The number of bytes from the end of the data array to use for checksum calculation.
    */
-  void sendPacket(const uint8_t* data, int numBits, int calcChecksumFromLastNBytes = 0);
+  void sendPacket(const uint8_t* data, int numBits);
 
 private:
   int _dccPin;

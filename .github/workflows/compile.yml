@@ -1,10 +1,8 @@
-name: Compile DCCRailcom
+name: Compile and Test DCCRailcom
 
 on:
   push:
-    branches: [ main ]
   pull_request:
-    branches: [ main ]
 
 jobs:
   build:
@@ -23,5 +21,5 @@ jobs:
         python -m pip install --upgrade pip
         pip install -U platformio
 
-    - name: Build the project
-      run: pio run
+    - name: Test the project
+      run: pio test -e native
