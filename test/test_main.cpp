@@ -1,6 +1,6 @@
 #include <ArduinoFake.h>
 #include <unity.h>
-#include "DCCRailcom.h"
+#include <DCCRailcom.h>
 
 using namespace fakeit;
 
