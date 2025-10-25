@@ -1,6 +1,7 @@
 name: Build and Release UF2
 
 on:
+  push:
   release:
     types: [created]
 
@@ -25,6 +26,7 @@ jobs:
       run: pio run -e release_build
 
     - name: Upload UF2 to release
+      if: github.event_name == 'release'
       uses: actions/upload-release-asset@v1
       with:
         upload_url: ${{ github.event.release.upload_url }}
