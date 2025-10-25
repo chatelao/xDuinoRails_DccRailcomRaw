@@ -19,21 +19,23 @@ void loop() {
   // Curved (thrown):             State 1
 
   // --- Packet for Turnout 22 Straight ---
+  // The bitstream is constructed to control turnout 22.
+  // This corresponds to decoder address 6, output pair 1.
   uint8_t straightPacket[] = {
-    0xFF, // Preamble
-    0xFF, // Preamble
-    0x86, // Address Byte for decoder 6
-    0x8A, // Data Byte for subaddress 1, state 0
-    0x0C  // Checksum
+    0xFF, // Preamble (11111111)
+    0xFF, // Preamble (11111111)
+    0x86, // Address Byte for decoder 6 (10000110)
+    0x8A, // Data Byte for subaddress 1, state 0 (10001010)
+    0x0C  // Checksum (00001100)
   };
 
   // --- Packet for Turnout 22 Curved ---
   uint8_t curvedPacket[] = {
-    0xFF, // Preamble
-    0xFF, // Preamble
-    0x86, // Address Byte for decoder 6
-    0x8B, // Data Byte for subaddress 1, state 1
-    0x0D  // Checksum
+    0xFF, // Preamble (11111111)
+    0xFF, // Preamble (11111111)
+    0x86, // Address Byte for decoder 6 (10000110)
+    0x8B, // Data Byte for subaddress 1, state 1 (10001011)
+    0x0D  // Checksum (00001101)
   };
 
   // The number of bits in the packet to be sent
