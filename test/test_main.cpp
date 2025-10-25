@@ -33,6 +33,10 @@ void test_send_packet() {
     };
     int numBits = 52;
 
+    // Stub the functions that will be called by the library
+    When(Method(ArduinoFake(), digitalWrite)).AlwaysReturn();
+    When(Method(ArduinoFake(), delayMicroseconds)).AlwaysReturn();
+
     // This test verifies that the correct number of bits are sent and that the
     // Railcom pin is cycled correctly. It does not verify the timing of the
     // DCC signal, which would require a logic analyzer or oscilloscope.
