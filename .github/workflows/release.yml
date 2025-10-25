@@ -1,0 +1,35 @@
+name: Build and Release UF2
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+
+    - name: Install PlatformIO
+      run: |
+        python -m pip install --upgrade pip
+        pip install -U platformio
+
+    - name: Build the release firmware
+      run: pio run -e release_build
+
+    - name: Upload UF2 to release
+      uses: actions/upload-release-asset@v1
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: .pio/build/release_build/firmware.uf2
+        asset_name: DCCRailcom_SendSpeed.uf2
+        asset_content_type: application/octet-stream
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
