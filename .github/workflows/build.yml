@@ -1,0 +1,37 @@
+name: Build Test Project
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build_test_project:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install PlatformIO
+        run: |
+          python -m pip install --upgrade pip
+          pip install -U platformio
+
+      - name: Create test project
+        run: |
+          mkdir -p test_project/src
+          cp examples/SendSpeed/SendSpeed.ino test_project/src/main.cpp
+          echo "[env:seeed_xiao_rp2040]" > test_project/platformio.ini
+          echo "platform = https://github.com/maxgerhardt/platform-raspberrypi.git" >> test_project/platformio.ini
+          echo "board = seeed_xiao_rp2040" >> test_project/platformio.ini
+          echo "framework = arduino" >> test_project/platformio.ini
+          echo "lib_deps = symlink://../" >> test_project/platformio.ini
+
+      - name: Build test project
+        run: |
+          cd test_project
+          pio run
