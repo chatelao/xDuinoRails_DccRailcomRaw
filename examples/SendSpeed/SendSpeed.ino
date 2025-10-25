@@ -27,9 +27,9 @@ void loop() {
   // 10. End Bit: '1'
 
   // --- Example: Send Speed 58 to Loco 3 ---
-  // Address:                3 (00000011)
-  // Command: 128-step speed   (00111111)
-  // Speed:                   58 (00111010)
+  // Address:                     3 (00000011)
+  // Command: 128-step speed (63)   (00111111)
+  // Speed:                      58 (00111010)
   // Checksum: 3 XOR 63 XOR 58 = 10 (00001010)
 
   // Construct the complete DCC packet as a raw binary array
