@@ -35,3 +35,23 @@ jobs:
         run: |
           cd test_project
           pio run
+
+  wokwi_test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run Wokwi simulation for FlipTurnout
+        uses: wokwi/wokwi-ci-action@v1
+        with:
+          token: ${{ secrets.WOKWI_CLI_TOKEN }}
+          path: examples/FlipTurnout
+          expect_text: "Sending straight packet"
+
+      - name: Run Wokwi simulation for SendSpeed
+        uses: wokwi/wokwi-ci-action@v1
+        with:
+          token: ${{ secrets.WOKWI_CLI_TOKEN }}
+          path: examples/SendSpeed
+          expect_text: "Sending speed packet"

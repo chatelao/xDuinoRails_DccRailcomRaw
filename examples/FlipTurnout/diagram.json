@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "author": "Jules",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-seeed-xiao-rp2040", "id": "xiao", "top": 0, "left": 0, "attrs": {} }
+  ],
+  "connections": []
+}
