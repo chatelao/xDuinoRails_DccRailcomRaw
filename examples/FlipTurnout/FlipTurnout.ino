@@ -10,7 +10,6 @@ DCCRailcom dcc(DCC_PIN, RAILCOM_PIN);
 void setup() {
   // Initialize the DCCRailcom library
   dcc.begin();
-  Serial.begin(115200);
 }
 
 void loop() {
@@ -43,14 +42,12 @@ void loop() {
   int numBits = 44;
 
   // Send the packet to set the turnout to straight
-  Serial.println("Sending straight packet");
   dcc.sendPacket(straightPacket, numBits);
 
   // Wait for 2 seconds
   delay(2000);
 
   // Send the packet to set the turnout to curved
-  Serial.println("Sending curved packet");
   dcc.sendPacket(curvedPacket, numBits);
 
   // Wait for 2 seconds

@@ -10,7 +10,6 @@ DCCRailcom dcc(DCC_PIN, RAILCOM_PIN);
 void setup() {
   // Initialize the DCCRailcom library
   dcc.begin();
-  Serial.begin(115200);
 }
 
 void loop() {
@@ -65,7 +64,6 @@ void loop() {
   int numBits = 53;
 
   // Send the DCC packet
-  Serial.println("Sending speed packet");
   dcc.sendPacket(rawPacket, numBits);
 
   // Wait for a second before sending the next packet
