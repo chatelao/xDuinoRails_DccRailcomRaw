@@ -19,19 +19,17 @@ void tearDown(void) {
 }
 
 void test_send_packet() {
-    // --- Example: Send Speed 58 to Loco 3 ---
-    // The bitstream is:
-    // 11111111 11111111 0 00000011 0 00111111 0 00111010 0 00001010 1
+    // Bitstream: 11111111 11111111 0 00000011 0 00111111 0 00111010 0 00001010 1
     uint8_t rawPacket[] = {
-        0xFF,       // Preamble
-        0xFC,       // Preamble (4 bits) + 0 + Address (3) - first 3 bits
-        0x1F,       // last 5 bits of address + 0 + Command (63) - first 2 bits
-        0xDE,       // last 6 bits of command + 0 + Speed (58) - first 1 bit
-        0x82,       // last 7 bits of speed + 0
-        0x8A,       // Checksum (10)
-        0x80        // End bit (1) + 7 padding bits
+        0xFF, // Preamble (Byte 1)
+        0xFF, // Preamble (Byte 2)
+        0x01, // 0 (Start) + 0000001 (Addr bits 7-1)
+        0x8F, // 1 (Addr bit 0) + 0 (Start) + 001111 (Cmd bits 7-2)
+        0xC7, // 11 (Cmd bits 1-0) + 0 (Start) + 00111 (Speed bits 7-3)
+        0x40, // 010 (Speed bits 2-0) + 0 (Start) + 0000 (Checksum bits 7-4)
+        0xA8  // 1010 (Checksum bits 3-0) + 1 (End) + 000 (Padding)
     };
-    int numBits = 52;
+    int numBits = 53;
 
     // Stub the functions that will be called by the library
     When(Method(ArduinoFake(), digitalWrite)).AlwaysReturn();
@@ -43,7 +41,7 @@ void test_send_packet() {
     dcc.sendPacket(rawPacket, numBits);
 
     // Verify that digitalWrite was called the correct number of times
-    Verify(Method(ArduinoFake(), digitalWrite)).Exactly(52 * 2 + 2);
+    Verify(Method(ArduinoFake(), digitalWrite)).Exactly(53 * 2 + 2);
 
     // Verify that the railcom pin was cycled
     Verify(Method(ArduinoFake(), digitalWrite).Using(RAILCOM_PIN_TEST, HIGH)).Once();
