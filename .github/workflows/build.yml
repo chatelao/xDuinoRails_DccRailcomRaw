@@ -48,6 +48,7 @@ jobs:
           token: ${{ secrets.WOKWI_CLI_TOKEN }}
           path: examples/FlipTurnout
           expect_text: "Sending straight packet"
+          timeout: 30000
 
       - name: Run Wokwi simulation for SendSpeed
         uses: wokwi/wokwi-ci-action@v1
@@ -55,3 +56,4 @@ jobs:
           token: ${{ secrets.WOKWI_CLI_TOKEN }}
           path: examples/SendSpeed
           expect_text: "Sending speed packet"
+          timeout: 30000
