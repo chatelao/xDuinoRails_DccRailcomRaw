@@ -32,22 +32,36 @@ void loop() {
   // Speed:                      58 (00111010)
   // Checksum: 3 XOR 63 XOR 58 = 10 (00001010)
 
-  // Construct the complete DCC packet as a raw binary array
-  // The bitstream is:
-  // 11111111 11111111 0 00000011 0 00111111 0 00111010 0 00001010 1
+  // --- Bitstream Construction ---
+  // The DCC bitstream is constructed by concatenating the following:
+  // Preamble (16 bits)
+  // Start Bit (1 bit)
+  // Address (8 bits)
+  // Start Bit (1 bit)
+  // Command (8 bits)
+  // Start Bit (1 bit)
+  // Speed (8 bits)
+  // Start Bit (1 bit)
+  // Checksum (8 bits)
+  // End Bit (1 bit)
+  // Total bits: 53
+  //
+  // Bitstream: 11111111 11111111 0 00000011 0 00111111 0 00111010 0 00001010 1
+  //
+  // This bitstream is then chunked into 8-bit segments to form the byte array.
+  // Note: The last byte is padded with trailing zeros to make a full byte.
   uint8_t rawPacket[] = {
-    0xFF,       // Preamble
-    0xFC,       // Preamble (4 bits) + 0 + Address (3) - first 3 bits
-    0x1F,       // last 5 bits of address + 0 + Command (63) - first 2 bits
-    0xDE,       // last 6 bits of command + 0 + Speed (58) - first 1 bit
-    0x82,       // last 7 bits of speed + 0
-    0x8A,       // Checksum (10)
-    0x80        // End bit (1) + 7 padding bits
+    0b11111111, // Preamble (Byte 1)
+    0b11111111, // Preamble (Byte 2)
+    0b00000001, // 0 (Start) + 0000001 (Addr bits 7-1)
+    0b10001111, // 1 (Addr bit 0) + 0 (Start) + 001111 (Cmd bits 7-2)
+    0b11000111, // 11 (Cmd bits 1-0) + 0 (Start) + 00111 (Speed bits 7-3)
+    0b01000000, // 010 (Speed bits 2-0) + 0 (Start) + 0000 (Checksum bits 7-4)
+    0b10101000  // 1010 (Checksum bits 3-0) + 1 (End) + 000 (Padding)
   };
 
   // The number of bits in the packet to be sent
-  // Preamble (16) + Start (1) + Address (8) + Start (1) + Command (8) + Start (1) + Speed (8) + Start (1) + Checksum (8) + End (1) = 52
-  int numBits = 52;
+  int numBits = 53;
 
   // Send the DCC packet
   dcc.sendPacket(rawPacket, numBits);
