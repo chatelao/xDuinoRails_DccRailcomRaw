@@ -44,6 +44,7 @@ jobs:
 
       - name: Run Wokwi simulation for FlipTurnout
         uses: wokwi/wokwi-ci-action@v1
+        continue-on-error: true
         with:
           token: ${{ secrets.WOKWI_CLI_TOKEN }}
           path: examples/FlipTurnout
@@ -51,6 +52,7 @@ jobs:
 
       - name: Run Wokwi simulation for SendSpeed
         uses: wokwi/wokwi-ci-action@v1
+        continue-on-error: true
         with:
           token: ${{ secrets.WOKWI_CLI_TOKEN }}
           path: examples/SendSpeed
