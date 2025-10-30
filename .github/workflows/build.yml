@@ -57,7 +57,7 @@ jobs:
           timeout: 20000
 
       - name: Upload VCD artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: vcd-artifacts
           path: |
