@@ -35,3 +35,33 @@ jobs:
         run: |
           cd test_project
           pio run
+
+  wokwi_test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run Wokwi simulation for FlipTurnout
+        uses: wokwi/wokwi-ci-action@v1
+        continue-on-error: true
+        with:
+          token: ${{ secrets.WOKWI_CLI_TOKEN }}
+          path: examples/FlipTurnout
+          timeout: 20000
+
+      - name: Run Wokwi simulation for SendSpeed
+        uses: wokwi/wokwi-ci-action@v1
+        continue-on-error: true
+        with:
+          token: ${{ secrets.WOKWI_CLI_TOKEN }}
+          path: examples/SendSpeed
+          timeout: 20000
+
+      - name: Upload VCD artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: vcd-artifacts
+          path: |
+            examples/FlipTurnout/output.vcd
+            examples/SendSpeed/output.vcd

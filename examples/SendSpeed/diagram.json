@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "author": "Jules",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-seeed-xiao-rp2040", "id": "xiao", "top": 0, "left": 0, "attrs": {} },
+    { "type": "wokwi-logic-analyzer", "id": "analyzer", "top": 0, "left": 0, "attrs": {} }
+  ],
+  "connections": [
+    [ "xiao:D2", "analyzer:0", "green", [ "v0" ] ],
+    [ "xiao:D3", "analyzer:1", "green", [ "v0" ] ]
+  ]
+}
