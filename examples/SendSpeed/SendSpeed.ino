@@ -9,6 +9,7 @@ DCCRailcom dcc(DCC_PIN, RAILCOM_PIN);
 
 void setup() {
   // Initialize the DCCRailcom library
+  Serial.begin(9600);
   dcc.begin();
 }
 

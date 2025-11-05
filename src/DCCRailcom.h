@@ -37,6 +37,13 @@ private:
    * @param bit The bit to write (0 or 1).
    */
   void writeBit(int bit);
+
+  /**
+   * @brief Print a DCC packet to the console.
+   * @param data A byte array containing the data to send.
+   * @param numBits The number of bits to send from the data array.
+   */
+  void printPacket(const uint8_t* data, int numBits);
 };
 
 #endif

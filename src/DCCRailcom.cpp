@@ -57,4 +57,47 @@ void DCCRailcom::sendPacket(const uint8_t* data, int numBits) {
     int bit = (data[byteIndex] >> bitIndex) & 1;
     writeBit(bit);
   }
+
+  // 3. Print the packet to the console
+  printPacket(data, numBits);
+}
+
+/**
+ * @brief Print a DCC packet to the console.
+ * @param data A byte array containing the data to send.
+ * @param numBits The number of bits to send from the data array.
+ */
+void DCCRailcom::printPacket(const uint8_t* data, int numBits) {
+  int numBytes = (numBits + 7) / 8;
+
+  Serial.println("DCC Packet:");
+
+  // Print HEX
+  Serial.print("HEX: ");
+  for (int i = 0; i < numBytes; i++) {
+    Serial.print("0x");
+    if (data[i] < 0x10) {
+      Serial.print("0");
+    }
+    Serial.print(data[i], HEX);
+    if (i < numBytes - 1) {
+      Serial.print(" - ");
+    }
+  }
+  Serial.println(" +");
+
+  // Print BIN
+  Serial.print("BIN: ");
+  for (int i = 0; i < numBytes; i++) {
+    for (int j = 7; j >= 0; j--) {
+      Serial.print((data[i] >> j) & 1);
+    }
+    Serial.print(" ");
+    if (i < numBytes - 1) {
+      Serial.print("0, ");
+    } else {
+      Serial.print("1");
+    }
+  }
+  Serial.println();
 }
