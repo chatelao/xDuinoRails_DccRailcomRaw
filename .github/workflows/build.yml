@@ -5,7 +5,7 @@ on:
   pull_request:
 
 jobs:
-  build_test_project:
+  build_examples:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -21,34 +21,54 @@ jobs:
           python -m pip install --upgrade pip
           pip install -U platformio
 
-      - name: Create test project
+      - name: Build SendSpeed
         run: |
-          mkdir -p test_project/src
-          cp examples/SendSpeed/SendSpeed.ino test_project/src/main.cpp
-          echo "[env:seeed_xiao_rp2040]" > test_project/platformio.ini
-          echo "platform = https://github.com/maxgerhardt/platform-raspberrypi.git" >> test_project/platformio.ini
-          echo "board = seeed_xiao_rp2040" >> test_project/platformio.ini
-          echo "framework = arduino" >> test_project/platformio.ini
-          echo "lib_deps = symlink://../" >> test_project/platformio.ini
+          mkdir -p build_sendspeed/src
+          cp examples/SendSpeed/SendSpeed.ino build_sendspeed/src/main.cpp
+          echo "[env:seeed_xiao_rp2040]" > build_sendspeed/platformio.ini
+          echo "platform = https://github.com/maxgerhardt/platform-raspberrypi.git" >> build_sendspeed/platformio.ini
+          echo "board = seeed_xiao_rp2040" >> build_sendspeed/platformio.ini
+          echo "framework = arduino" >> build_sendspeed/platformio.ini
+          echo "lib_deps = symlink://../" >> build_sendspeed/platformio.ini
+          cd build_sendspeed && pio run
+          cp .pio/build/seeed_xiao_rp2040/firmware.elf ../SendSpeed.elf
 
-      - name: Build test project
+      - name: Build FlipTurnout
         run: |
-          cd test_project
-          pio run
+          mkdir -p build_flipturnout/src
+          cp examples/FlipTurnout/FlipTurnout.ino build_flipturnout/src/main.cpp
+          echo "[env:seeed_xiao_rp2040]" > build_flipturnout/platformio.ini
+          echo "platform = https://github.com/maxgerhardt/platform-raspberrypi.git" >> build_flipturnout/platformio.ini
+          echo "board = seeed_xiao_rp2040" >> build_flipturnout/platformio.ini
+          echo "framework = arduino" >> build_flipturnout/platformio.ini
+          echo "lib_deps = symlink://../" >> build_flipturnout/platformio.ini
+          cd build_flipturnout && pio run
+          cp .pio/build/seeed_xiao_rp2040/firmware.elf ../FlipTurnout.elf
+
+      - name: Upload firmware artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: firmwares
+          path: |
+            SendSpeed.elf
+            FlipTurnout.elf
 
   wokwi_test:
+    needs: build_examples
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Run Wokwi simulation for FlipTurnout
-        uses: wokwi/wokwi-ci-action@v1
-        continue-on-error: true
+      - name: Download firmware artifacts
+        uses: actions/download-artifact@v4
         with:
-          token: ${{ secrets.WOKWI_CLI_TOKEN }}
-          path: examples/FlipTurnout
-          timeout: 20000
+          name: firmwares
+
+      - name: Prepare SendSpeed
+        run: |
+          mv SendSpeed.elf examples/SendSpeed/firmware.elf
+          sed -i "s/firmware = '.*'/firmware = 'firmware.elf'/" examples/SendSpeed/wokwi.toml
 
       - name: Run Wokwi simulation for SendSpeed
         uses: wokwi/wokwi-ci-action@v1
@@ -56,6 +76,19 @@ jobs:
         with:
           token: ${{ secrets.WOKWI_CLI_TOKEN }}
           path: examples/SendSpeed
+          timeout: 20000
+
+      - name: Prepare FlipTurnout
+        run: |
+          mv FlipTurnout.elf examples/FlipTurnout/firmware.elf
+          sed -i "s/firmware = '.*'/firmware = 'firmware.elf'/" examples/FlipTurnout/wokwi.toml
+
+      - name: Run Wokwi simulation for FlipTurnout
+        uses: wokwi/wokwi-ci-action@v1
+        continue-on-error: true
+        with:
+          token: ${{ secrets.WOKWI_CLI_TOKEN }}
+          path: examples/FlipTurnout
           timeout: 20000
 
       - name: Upload VCD artifacts
